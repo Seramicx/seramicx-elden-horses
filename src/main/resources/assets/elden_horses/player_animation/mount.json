@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "uuid": "9c2e5a17-7d4b-4823-8a91-2e3f4a5b6c7d",
+  "name": "mount",
+  "emote": {
+    "beginTick": 0,
+    "endTick": 8,
+    "stopTick": 12,
+    "isLoop": false,
+    "returnTick": 0,
+    "nsfw": false,
+    "degrees": false,
+    "moves": [
+      { "tick": 0,  "easing": "OUTQUAD", "body": { "pitch": 0.4 } },
+      { "tick": 5,  "easing": "OUTQUAD", "body": { "pitch": 0.15 } },
+      { "tick": 12, "easing": "INOUTSINE", "body": { "pitch": 0.0 } },
+
+      { "tick": 0,  "easing": "OUTQUAD", "rightLeg": { "pitch": 0.2 } },
+      { "tick": 4,  "easing": "OUTQUAD", "rightLeg": { "pitch": 1.4 } },
+      { "tick": 8,  "easing": "INOUTSINE", "rightLeg": { "pitch": -0.5 } },
+      { "tick": 12, "easing": "INOUTSINE", "rightLeg": { "pitch": -1.4 } },
+
+      { "tick": 0,  "easing": "OUTQUAD", "leftLeg": { "pitch": 0.2 } },
+      { "tick": 4,  "easing": "OUTQUAD", "leftLeg": { "pitch": 1.4 } },
+      { "tick": 8,  "easing": "INOUTSINE", "leftLeg": { "pitch": -0.5 } },
+      { "tick": 12, "easing": "INOUTSINE", "leftLeg": { "pitch": -1.4 } }
+    ]
+  }
+}

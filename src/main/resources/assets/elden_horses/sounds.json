@@ -1,0 +1,9 @@
+{
+  "whistle": {
+    "category": "player",
+    "subtitle": "subtitles.elden_horses.whistle",
+    "sounds": [
+      "elden_horses:whistle"
+    ]
+  }
+}

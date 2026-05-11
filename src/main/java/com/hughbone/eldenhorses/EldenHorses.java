@@ -6,6 +6,7 @@ import com.hughbone.eldenhorses.event.CommonEvents;
 import com.hughbone.eldenhorses.item.ModItems;
 import com.hughbone.eldenhorses.loot.SpectralLootModifier;
 import com.hughbone.eldenhorses.net.NetworkHandler;
+import com.hughbone.eldenhorses.sound.ModSounds;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -33,6 +34,7 @@ public class EldenHorses {
 
         ModItems.ITEMS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);
+        ModSounds.SOUNDS.register(modBus);
         SpectralLootModifier.SERIALIZERS.register(modBus);
 
         ModLoadingContext.get().registerConfig(

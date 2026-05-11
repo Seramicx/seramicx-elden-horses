@@ -8,6 +8,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -108,5 +109,36 @@ public class CommonEvents {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
         sp.getCapability(PlayerEldenHorseCap.CAP).ifPresent(c ->
                 c.rehydrate((ServerLevel) sp.level()));
+    }
+
+    /**
+     * Drive the summon/unsummon state machine. The cap does nothing when
+     * its phase is IDLE so the cost on quiet ticks is one method call per
+     * player per tick.
+     */
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent e) {
+        if (e.phase != TickEvent.Phase.END) return;
+        if (!(e.player instanceof ServerPlayer sp)) return;
+        PlayerEldenHorseCap.of(sp).tickAnimation(sp);
+    }
+
+    /**
+     * Iframes: cancel incoming damage during the active mount-rise
+     * (summon ticks 0-11) and the horse-fade + dismount transition
+     * (unsummon ticks 0-11). Matches Elden Ring's ~0.5s mount/dismount
+     * invulnerability windows. After the transition the player is
+     * vulnerable again even if the horse is still translucent. Highest
+     * priority so we beat other mods' damage hooks; void damage and
+     * other instant-kill sources land here too and get nullified.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onPlayerHurt(LivingHurtEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer sp)) return;
+        PlayerEldenHorseCap cap = PlayerEldenHorseCap.of(sp);
+        if (cap.getAnimationPhase() == PlayerEldenHorseCap.AnimationPhase.IDLE) return;
+        if (cap.getAnimationPhaseTick() < 12) {
+            e.setCanceled(true);
+        }
     }
 }

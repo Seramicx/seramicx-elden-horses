@@ -19,5 +19,17 @@ public class NetworkHandler {
                 SummonHorseC2SPacket::encode,
                 SummonHorseC2SPacket::decode,
                 SummonHorseC2SPacket::handle);
+        INSTANCE.registerMessage(
+                id++,
+                PlayAnimationS2CPacket.class,
+                PlayAnimationS2CPacket::encode,
+                PlayAnimationS2CPacket::decode,
+                PlayAnimationS2CPacket::handle);
+        INSTANCE.registerMessage(
+                id++,
+                HorseFadeS2CPacket.class,
+                HorseFadeS2CPacket::encode,
+                HorseFadeS2CPacket::decode,
+                HorseFadeS2CPacket::handle);
     }
 }

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "uuid": "7b1d4f9c-3a8e-4f15-9c6a-1d2e3f4a5b6c",
+  "name": "whistle",
+  "emote": {
+    "beginTick": 6,
+    "endTick": 14,
+    "stopTick": 20,
+    "isLoop": false,
+    "returnTick": 0,
+    "nsfw": false,
+    "degrees": false,
+    "moves": [
+      { "tick": 0,  "easing": "INOUTSINE", "rightArm": { "pitch": 0.0 } },
+      { "tick": 6,  "easing": "INOUTSINE", "rightArm": { "pitch": -1.4 } },
+      { "tick": 14, "easing": "INOUTSINE", "rightArm": { "pitch": -1.4 } },
+      { "tick": 20, "easing": "INOUTSINE", "rightArm": { "pitch": 0.0 } },
+
+      { "tick": 0,  "easing": "INOUTSINE", "rightArm": { "yaw": 0.0 } },
+      { "tick": 6,  "easing": "INOUTSINE", "rightArm": { "yaw": -0.55 } },
+      { "tick": 14, "easing": "INOUTSINE", "rightArm": { "yaw": -0.55 } },
+      { "tick": 20, "easing": "INOUTSINE", "rightArm": { "yaw": 0.0 } },
+
+      { "tick": 0,  "easing": "INOUTSINE", "head": { "pitch": 0.0 } },
+      { "tick": 6,  "easing": "INOUTSINE", "head": { "pitch": -0.3 } },
+      { "tick": 14, "easing": "INOUTSINE", "head": { "pitch": -0.3 } },
+      { "tick": 20, "easing": "INOUTSINE", "head": { "pitch": 0.0 } }
+    ]
+  }
+}
