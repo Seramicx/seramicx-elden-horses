@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.hughbone.eldenhorses.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "elden_horses.refmap.json",
+  "mixins": [
+    "AbstractHorseMixin",
+    "HorseArmorEnchantableMixin",
+    "HorseScreenHandlerMixin"
+  ],
+  "client": [
+    "HorseArmorLayerTransparencyMixin",
+    "LivingEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+	"eldenhorses.category": "Elden Horses",
+	"key.eldenhorses.summonhorse": "Summon Horse",
+	"item.elden_horses.netherite_horse_armor": "Netherite Horse Armor",
+	"item.elden_horses.horse_armor_tome": "Tome of Horse Armor",
+	"enchantment.elden_horses.spectral_steed": "Spectral Steed",
+	"enchantment.elden_horses.spectral_steed.desc": "Bond a horse to its rider. Summon and dismiss it at will, become translucent on its back, mine faster while riding, and reduce mount fall damage. The bonded horse cannot truly die: it auto-unsummons when slain and recovers after a cooldown.",
+	"enchantment.elden_horses.spectral_leap": "Spectral Leap",
+	"enchantment.elden_horses.spectral_leap.desc": "The bonded horse can leap a second time mid-air."
+}
