@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "conditions": [
+    { "type": "forge:mod_loaded", "modid": "apotheosis" }
+  ],
+  "pattern": [
+    "  B",
+    "BBB",
+    "BXB"
+  ],
+  "key": {
+    "B": { "item": "minecraft:book" },
+    "X": { "item": "minecraft:blaze_rod" }
+  },
+  "result": {
+    "item": "elden_horses:horse_armor_tome",
+    "count": 6
+  }
+}

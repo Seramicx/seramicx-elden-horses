@@ -1,0 +1,29 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+# Files from Forge MDK
+forge*changelog.txt
+
+# Third-party mod jars used as compileOnly deps (Apotheosis, Placebo).
+# Not redistributable; clone-time setup instructions live in libs/README.md.
+libs/*.jar
