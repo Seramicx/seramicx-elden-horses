@@ -139,12 +139,16 @@ dependencies {
     // Mixin annotation processor — generates elden_horses.refmap.json at compile time
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    // Apotheosis tome compat. compileOnly because it's an optional dep — at
+    // Apotheosis tome compat. compileOnly because it's an optional dep. At
     // runtime we only register the tome when ModList sees apotheosis loaded,
     // and the compat class is in its own package so it isn't class-loaded
     // when Apotheosis is missing. Placebo is required transitively.
     compileOnly fg.deobf("blank:Apotheosis-1.20.1:7.4.8")
     compileOnly fg.deobf("blank:Placebo-1.20.1:8.6.3")
+
+    // PlayerAnimator (mod id "playeranimator"). Required at runtime for the
+    // whistle animation during horse summon. Hard dep in mods.toml.
+    implementation fg.deobf("blank:player-animation-lib-forge:1.0.2-rc1+1.20")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

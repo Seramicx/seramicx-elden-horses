@@ -2,6 +2,7 @@ package com.hughbone.eldenhorses.mixin;
 
 import com.hughbone.eldenhorses.EldenHorsesConfig;
 import com.hughbone.eldenhorses.cap.HorseEldenArmorCap;
+import com.hughbone.eldenhorses.client.ClientAnimationHooks;
 import com.hughbone.eldenhorses.client.EldenRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -44,6 +45,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HorseArmorLayerTransparencyMixin {
 
     @Unique private boolean elden_shouldLower = false;
+    @Unique private float elden_fadeAlpha = -1f;
 
     @Inject(method = "render", at = @At("HEAD"))
     private void elden_renderHead(PoseStack pose, MultiBufferSource src,
@@ -53,6 +55,16 @@ public abstract class HorseArmorLayerTransparencyMixin {
                                   float netHeadYaw, float headPitch,
                                   CallbackInfo ci) {
         elden_shouldLower = false;
+        elden_fadeAlpha = -1f;
+
+        // Summon/unsummon fade path: applies in any view, regardless of
+        // rider state. Driven by HorseFadeS2CPacket on the client side.
+        if (ClientAnimationHooks.isFading(horse.getId())) {
+            elden_shouldLower = true;
+            elden_fadeAlpha = ClientAnimationHooks.getFadeAlpha(horse.getId());
+            return;
+        }
+
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
         // Skip GUI contexts (horse inventory preview); see body mixin.
@@ -95,6 +107,8 @@ public abstract class HorseArmorLayerTransparencyMixin {
                     target = "Lnet/minecraft/client/model/HorseModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"),
             index = 7)
     private float elden_modifyAlpha(float original) {
-        return elden_shouldLower ? (float) EldenHorsesConfig.transparencyAlpha : original;
+        if (!elden_shouldLower) return original;
+        if (elden_fadeAlpha >= 0f) return elden_fadeAlpha;
+        return (float) EldenHorsesConfig.transparencyAlpha;
     }
 }

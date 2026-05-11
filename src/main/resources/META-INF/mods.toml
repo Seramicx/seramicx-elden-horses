@@ -66,6 +66,16 @@ description='''${mod_description}'''
     ordering="NONE"
     side="BOTH"
 
+# Required: PlayerAnimator (KosmX). Drives the whistle player animation
+# during horse summon. Without it the cap state-machine still runs but no
+# arm-to-mouth pose plays.
+[[dependencies.${mod_id}]]
+    modId="playeranimator"
+    mandatory=true
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
 # Optional: Apotheosis. When present, registers Tome of Horse Armor and its
 # crafting recipe. Absent → tome simply doesn't exist; everything else still
 # works normally.
