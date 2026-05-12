@@ -122,9 +122,15 @@ Download the jar from [Releases](https://github.com/Seramicx/seramicx-elden-hors
 
 ## Credits and License
 
-Original Fabric implementation by **HughBone**, MIT licensed (see `LICENSE`).
-Forge port and feature additions by **Seramicx**.
-This port keeps HughBone's MIT license and the `elden_horses` mod ID for save compatibility with the original.
+Huge shoutout to **hughbone_** for making the original Elden Horses mod (1.18/19 Fabric) which I revamped and ported to 1.20.1! Check out his mod here: https://www.curseforge.com/minecraft/mc-mods/elden-horses
+
+Another huge shoutout to **InspectorJ** for the original whistle SFX, which I modified for this mod! The original SFX is here: https://freesound.org/people/InspectorJ/sounds/423285/
+
+Forge port and new feature set by **Seramicx**.
+
+### License and runtime deps
+
+This port keeps HughBone's MIT license (see `LICENSE`) and the `elden_horses` mod ID for save compatibility with the original.
 
 PlayerAnimator by **KosmX** is used as a runtime dependency under its own license.
 Apotheosis assets (referenced via lang keys for tome tooltips) belong to **Shadows-of-Fire**; the Apotheosis jar must be sourced separately to build with that compat enabled.
