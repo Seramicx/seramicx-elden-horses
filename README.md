@@ -3,11 +3,9 @@
 A Forge 1.20.1 port of [HughBone's Elden Horses](https://github.com/HughBone/elden-horses) (originally Fabric, MC 1.19.2), heavily expanded upon with Spectral enchantments, an Elden Ring style summon animation, Apotheosis tome compat, and Shiny Horses compat.
 
 <p align="center">
-  <a href="https://youtu.be/U2Gf7-xuLw0">
-    <img src="https://i.ytimg.com/vi/U2Gf7-xuLw0/hqdefault.jpg" alt="Seramicx's Elden Horses Animation Showcase" width="600">
-  </a>
+  <video src="https://github.com/Seramicx/seramicx-elden-horses/raw/main/docs/media/animation-showcase.mp4" controls width="600"></video>
   <br>
-  <em>Animation showcase (click to watch on YouTube)</em>
+  <em>Animation showcase. Also on <a href="https://youtu.be/U2Gf7-xuLw0">YouTube</a>.</em>
 </p>
 
 ## Features
@@ -16,12 +14,25 @@ A Forge 1.20.1 port of [HughBone's Elden Horses](https://github.com/HughBone/eld
 
 Two new enchantments that work on any vanilla or modded horse armor (iron, gold, diamond, netherite, etc.):
 
+<p align="center">
+  <img src="docs/media/spectral-enchantments-tooltip.png" alt="Spectral Steed and Spectral Leap stacked on netherite horse armor" width="600">
+  <br>
+  <em>Both Spectral enchantments on one piece of netherite horse armor, stacking with vanilla Protection.</em>
+</p>
+
 - **Spectral Steed**: bond a horse and summon or dismiss it on demand.
   - 1st-person body and armor translucency while riding
   - Mining speed boost on horseback (5x)
   - Mount fall-damage softening
   - Lethal-hit protection: a fatal blow auto-unsummons the horse and starts a configurable recovery cooldown instead of killing it
   - Once bound, the horse is yours; it persists across world reload, death/respawn, and dimension change
+
+<p align="center">
+  <img src="docs/media/1st-person-translucency.png" alt="1st-person view of translucent horse body and armor while mining" width="400">
+  <br>
+  <em>1st-person view while riding: body and armor go translucent, mining is accelerated.</em>
+</p>
+
 - **Spectral Leap**: mid-air double jump on the bonded horse.
 
 Both enchantments can be obtained from:
@@ -45,6 +56,12 @@ A full 2-second summon animation and 1.2-second unsummon, not just an instant te
 ### Tome of Horse Armor (optional Apotheosis compat)
 
 When Apotheosis is installed, an extra item gets registered:
+
+<p align="center">
+  <img src="docs/media/apotheosis-tome.png" alt="Tome of Horse Armor item tooltip" width="600">
+  <br>
+  <em>Tome of Horse Armor, registered under the Apotheosis Enchanting module.</em>
+</p>
 
 - Appears in the Apotheosis Enchanting creative tab, positioned right after the Boots Tome
 - Crafted from 6 books and 1 blaze rod in a 3x3 shaped recipe
