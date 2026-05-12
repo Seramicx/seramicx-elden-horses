@@ -126,8 +126,6 @@ Huge shoutout to **hughbone_** for making the original Elden Horses mod (1.18/19
 
 Another huge shoutout to **InspectorJ** for the original whistle SFX, which I modified for this mod! The original SFX is here: https://freesound.org/people/InspectorJ/sounds/423285/
 
-Forge port and new feature set by **Seramicx**.
-
 ### License and runtime deps
 
 This port keeps HughBone's MIT license (see `LICENSE`) and the `elden_horses` mod ID for save compatibility with the original.
