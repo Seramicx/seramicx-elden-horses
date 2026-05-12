@@ -3,7 +3,7 @@
 A Forge 1.20.1 port of [HughBone's Elden Horses](https://github.com/HughBone/elden-horses) (originally Fabric, MC 1.19.2), heavily expanded upon with Spectral enchantments, an Elden Ring style summon animation, Apotheosis tome compat, and Shiny Horses compat.
 
 <p align="center">
-  <video src="https://github.com/Seramicx/seramicx-elden-horses/raw/main/docs/media/animation-showcase.mp4" controls width="600"></video>
+  <video src="docs/media/animation-showcase.mp4" controls width="600"></video>
   <br>
   <em>Animation showcase. Also on <a href="https://youtu.be/U2Gf7-xuLw0">YouTube</a>.</em>
 </p>
@@ -44,7 +44,7 @@ Both enchantments can be obtained from:
 
 A full 2-second summon animation and 1.2-second unsummon, not just an instant teleport:
 
-- **Custom whistle sound**, with layered beacon and amethyst-chime audio under it for the materialize effect
+- **Custom whistle sound**, with layered enderman teleport and note-block chime audio under it for the materialize effect
 - **Whistle pose**: arm raised to mouth, head tilted, while particles converge (driven by PlayerAnimator)
 - **Mount animation**: legs swing up horizontally then settle into seated pose, running on a separate animation layer so it doesn't clash with the whistle
 - **Render-time vertical offset**: your player visibly rises from ground level into the saddle with a brief overshoot, so it actually looks like you hop on instead of teleporting onto the horse
