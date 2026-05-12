@@ -115,6 +115,7 @@ Edit `config/elden_horses-common.toml`:
 
 - [Apotheosis](https://www.curseforge.com/minecraft/mc-mods/apotheosis): enables the Tome of Horse Armor item and recipe
 - [Shiny Horses Forge](https://www.curseforge.com/minecraft/mc-mods/shiny-horses-forge): adds the rest of the vanilla armor enchantments to the horse-armor enchant pool
+- [Better Mount Steering](https://www.curseforge.com/minecraft/mc-mods/better-mount-steering): decouples the mount camera from horse direction so you can look around freely while riding, plus smoother body turning. Strongly recommended alongside this mod for the full Elden Ring style mounted feel
 
 ## Installation
 
