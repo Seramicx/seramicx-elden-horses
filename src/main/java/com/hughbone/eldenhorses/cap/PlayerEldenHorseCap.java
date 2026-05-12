@@ -281,15 +281,17 @@ public interface PlayerEldenHorseCap {
                 // during the whistle window.
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
                         ModSounds.WHISTLE.get(),
-                        SoundSource.PLAYERS, 1.0F, 1.0F);
-                // Materialize layer: subtle beacon hum + amethyst chime
-                // under the whistle as the horse begins to manifest.
+                        SoundSource.PLAYERS, 0.6F, 1.0F);
+                // Magical materialize layer: enderman teleport for the
+                // cosmic "vrrooop" + a low note-block chime. The pitch
+                // pair leans ascending (chime low, teleport mid-high) so
+                // the ear reads it as "something appearing".
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
-                        SoundEvents.BEACON_ACTIVATE,
-                        SoundSource.AMBIENT, 0.45F, 1.6F);
+                        SoundEvents.ENDERMAN_TELEPORT,
+                        SoundSource.PLAYERS, 0.45F, 1.3F);
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
-                        SoundEvents.AMETHYST_BLOCK_CHIME,
-                        SoundSource.BLOCKS, 0.6F, 1.7F);
+                        SoundEvents.NOTE_BLOCK_CHIME.value(),
+                        SoundSource.PLAYERS, 0.55F, 0.7F);
 
                 NetworkHandler.INSTANCE.send(
                         PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> self),
@@ -344,14 +346,15 @@ public interface PlayerEldenHorseCap {
                 NetworkHandler.INSTANCE.send(
                         PacketDistributor.TRACKING_ENTITY.with(() -> horse),
                         new HorseFadeS2CPacket(horse.getId(), false, UNSUMMON_FADE_DURATION));
-                // Dissolve audio: beacon-deactivate hum + descending
-                // amethyst chime. Inverse-ish of the summon manifest.
+                // Dissolve audio: same two sounds as summon but with the
+                // pitches swapped, so the ear reads it as descending /
+                // dispersing instead of ascending / appearing.
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
-                        SoundEvents.BEACON_DEACTIVATE,
-                        SoundSource.AMBIENT, 0.5F, 1.3F);
+                        SoundEvents.ENDERMAN_TELEPORT,
+                        SoundSource.PLAYERS, 0.45F, 0.7F);
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
-                        SoundEvents.AMETHYST_BLOCK_CHIME,
-                        SoundSource.BLOCKS, 0.55F, 0.85F);
+                        SoundEvents.NOTE_BLOCK_CHIME.value(),
+                        SoundSource.PLAYERS, 0.55F, 1.5F);
             }
 
             // Particles for the whole window. Player position works as
