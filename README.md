@@ -61,9 +61,9 @@ Without Apotheosis the tome simply doesn't register.
 A Forge global loot modifier rolls extra drops into any chest table (vanilla or modded) whose path contains `chests/`:
 
 - Spectral Steed / Leap enchanted books
-- Pre-enchanted horse armor (iron / gold / diamond / netherite)
+- Pre-enchanted horse armor (iron / gold / diamond)
 
-Drop rate and book-to-armor ratio are config-driven.
+Drop rate and book-to-armor ratio are config-driven. Netherite horse armor is intentionally excluded from loot and must be smithed (template + diamond horse armor + netherite ingot, same as vanilla netherite armor upgrades).
 
 ## Configuration
 
