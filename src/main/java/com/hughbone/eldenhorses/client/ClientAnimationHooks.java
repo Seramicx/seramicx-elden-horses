@@ -24,22 +24,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-// Client-only entry point for the summon/unsummon animation system.
-//
-// Responsibilities:
-//   1. Register a per-player ModifierLayer with PlayerAnimator so we have
-//      somewhere to push the whistle animation.
-//   2. Handle PlayAnimationS2CPacket: resolve target player, push whistle
-//      animation onto their layer.
-//   3. Maintain a client-side fade map for horse entities; render mixin
-//      queries this map for the current alpha.
 @Mod.EventBusSubscriber(modid = EldenHorses.MODID, value = Dist.CLIENT)
 public final class ClientAnimationHooks {
 
     private ClientAnimationHooks() {}
 
-    // Two separate animation layers so whistle (arms + head) and mount /
-    // dismount (legs + body) can stack instead of replacing each other.
     private static final ResourceLocation ARMS_LAYER_ID =
             new ResourceLocation(EldenHorses.MODID, "summon_arms_layer");
     private static final ResourceLocation BODY_LAYER_ID =
@@ -82,7 +71,6 @@ public final class ClientAnimationHooks {
             case PlayAnimationS2CPacket.TYPE_MOUNT -> {
                 layerKey = BODY_LAYER_ID;
                 animKey = ANIM_MOUNT;
-                // Kick the vertical render offset alongside the pose anim.
                 startMountAnim(entityId);
             }
             case PlayAnimationS2CPacket.TYPE_DISMOUNT -> {
@@ -101,18 +89,13 @@ public final class ClientAnimationHooks {
 
         KeyframeAnimation anim = PlayerAnimationRegistry.getAnimation(animKey);
         if (anim == null) return;
-        // Crossfade in over 3 ticks so poses don't snap when transitioning.
         layer.replaceAnimationWithFade(
                 AbstractFadeModifier.standardFadeIn(3, dev.kosmx.playerAnim.core.util.Ease.INOUTSINE),
                 new KeyframeAnimationPlayer(anim));
     }
 
-    // -------- Horse fade tracking (client-side only) -------- //
-
     private record FadeState(long startTick, int duration, boolean fadeIn) {}
 
-    // Keyed by client entity id. Cleared either when a fade completes or
-    // via the periodic sweep below.
     private static final Map<Integer, FadeState> FADES = new HashMap<>();
 
     public static void startHorseFade(int entityId, boolean fadeIn, int duration) {
@@ -121,8 +104,6 @@ public final class ClientAnimationHooks {
         FADES.put(entityId, new FadeState(mc.level.getGameTime(), duration, fadeIn));
     }
 
-    // Returns 1.0 (fully opaque) when not in a fade. Returns the in-progress
-    // alpha otherwise; clamps to 0.0 / 1.0 at the endpoints.
     public static float getFadeAlpha(int entityId) {
         FadeState s = FADES.get(entityId);
         if (s == null) return 1.0f;
@@ -131,9 +112,6 @@ public final class ClientAnimationHooks {
         long elapsed = mc.level.getGameTime() - s.startTick;
         if (elapsed <= 0) return s.fadeIn ? 0.0f : 1.0f;
         if (elapsed >= s.duration) {
-            // Fade-in done -> remove (entity is fully opaque now).
-            // Fade-out done -> keep at alpha 0; entity will be removed by
-            // server packet shortly and the periodic sweep handles cleanup.
             if (s.fadeIn) FADES.remove(entityId);
             return s.fadeIn ? 1.0f : 0.0f;
         }
@@ -144,16 +122,6 @@ public final class ClientAnimationHooks {
     public static boolean isFading(int entityId) {
         return FADES.containsKey(entityId);
     }
-
-    // -------- Player mount-animation vertical offset -------- //
-    //
-    // Triggered alongside the mount PlayerAnimator pose. The mounted player
-    // is rendered with a downward Y offset that interpolates from
-    // -1.5 blocks (standing next to the horse on the ground) to 0
-    // (settled in the saddle) across MOUNT_ANIM_DURATION ticks. This is the
-    // only way to get a true "hop onto horse" visual; PlayerAnimator's body
-    // translation only moves one body part's pivot, which produces a
-    // mole-from-underground effect instead.
 
     private static final Map<Integer, Long> MOUNT_ANIM_STARTS = new HashMap<>();
     private static final int MOUNT_ANIM_DURATION = 12;
@@ -177,14 +145,7 @@ public final class ClientAnimationHooks {
             return 0f;
         }
         float t = elapsed / MOUNT_ANIM_DURATION;
-        // Jump arc with overshoot. Returned value is the amount to translate
-        // the player DOWN from their server position (saddle):
-        //   +1.5 = on ground
-        //    0   = exactly at saddle
-        //   -0.2 = briefly above saddle (peak of jump)
-        //
-        // Phase 1 (0..0.5): rapid ease-out rise from +1.5 to -0.2 overshoot.
-        // Phase 2 (0.5..1.0): smoothstep settle from -0.2 back to 0.
+        // Two-phase jump arc: ease-out rise with overshoot, then smoothstep settle
         if (t < 0.5f) {
             float p = t / 0.5f;
             float eased = 1f - (1f - p) * (1f - p);
@@ -195,9 +156,6 @@ public final class ClientAnimationHooks {
         return -0.2f + 0.2f * eased;
     }
 
-    // Sweep stale entries every 5s. Catches the case where a fade-out
-    // completes but the entity was already removed (or never tracked
-    // by us again). Prevents the map from growing unbounded.
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
@@ -212,8 +170,6 @@ public final class ClientAnimationHooks {
         while (it.hasNext()) {
             Map.Entry<Integer, FadeState> entry = it.next();
             FadeState s = entry.getValue();
-            // Anything older than its duration plus a generous 20-tick grace
-            // is safe to drop. Entity-removed-mid-fade also lands here.
             if (now - s.startTick > s.duration + 20) {
                 it.remove();
                 continue;

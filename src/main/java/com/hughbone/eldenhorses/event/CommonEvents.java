@@ -34,12 +34,6 @@ public class CommonEvents {
         e.setAmount(Math.max(0f, e.getAmount() - 4f));
     }
 
-    /**
-     * Spectral Steed death protection. If the bonded horse would die from this
-     * damage, cancel the death and trigger the cooldown unsummon on the
-     * owning player's cap. Runs at HIGH priority so we get to inspect the
-     * final damage value after any reductions from other mods.
-     */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingDamage(LivingDamageEvent e) {
         if (e.getEntity().level().isClientSide) return;
@@ -55,11 +49,6 @@ public class CommonEvents {
         PlayerEldenHorseCap.of(owner).triggerSpectralDeath(owner);
     }
 
-    /**
-     * Locate the player who has this horse bound via PlayerEldenHorseCap.
-     * Iterates the level's player list. Cheap given the typical small
-     * player count vs the cost of a per-horse owner field.
-     */
     private static ServerPlayer findBondedPlayer(Horse h) {
         if (!(h.level() instanceof ServerLevel sl)) return null;
         for (ServerPlayer sp : sl.getServer().getPlayerList().getPlayers()) {
@@ -111,11 +100,6 @@ public class CommonEvents {
                 c.rehydrate((ServerLevel) sp.level()));
     }
 
-    /**
-     * Drive the summon/unsummon state machine. The cap does nothing when
-     * its phase is IDLE so the cost on quiet ticks is one method call per
-     * player per tick.
-     */
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
@@ -123,15 +107,6 @@ public class CommonEvents {
         PlayerEldenHorseCap.of(sp).tickAnimation(sp);
     }
 
-    /**
-     * Iframes: cancel incoming damage during the active mount-rise
-     * (summon ticks 0-11) and the horse-fade + dismount transition
-     * (unsummon ticks 0-11). Matches Elden Ring's ~0.5s mount/dismount
-     * invulnerability windows. After the transition the player is
-     * vulnerable again even if the horse is still translucent. Highest
-     * priority so we beat other mods' damage hooks; void damage and
-     * other instant-kill sources land here too and get nullified.
-     */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerHurt(LivingHurtEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;

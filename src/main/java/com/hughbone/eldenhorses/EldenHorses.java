@@ -53,9 +53,6 @@ public class EldenHorses {
         LOGGER.info("Elden Horses Initialized.");
     }
 
-    // Apotheosis registers its enchanting-module creative tab under
-    // apotheosis:ench. Comparing by ResourceLocation avoids classloading
-    // any Apotheosis types when the mod isn't installed.
     private static final ResourceLocation APOTH_ENCH_TAB =
             new ResourceLocation("apotheosis", "ench");
 

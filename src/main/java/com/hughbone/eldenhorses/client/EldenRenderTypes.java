@@ -9,10 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
 
-// Extends RenderStateShard so this class inherits access to the protected
-// static shard constants (RENDERTYPE_*_SHADER, TRANSLUCENT_TRANSPARENCY,
-// ITEM_ENTITY_TARGET, LIGHTMAP, OVERLAY, COLOR_WRITE) without needing
-// access transformers.
+// Extends RenderStateShard for access to protected shard constants.
 public final class EldenRenderTypes extends RenderStateShard {
     private EldenRenderTypes() {
         super("elden_horses_marker", () -> {}, () -> {});

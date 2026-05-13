@@ -8,13 +8,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-// Server-to-client: tell observers (and the player's own client) to play
-// a registered PlayerAnimator animation on a specific player.
-//
-// type byte:
-//   0 = "whistle" animation (SUMMONING intro)
-//   1 = "mount" animation (SUMMONING end)
-//   2 = "dismount" animation (UNSUMMONING midpoint)
 public class PlayAnimationS2CPacket {
     public static final byte TYPE_WHISTLE = 0;
     public static final byte TYPE_MOUNT = 1;

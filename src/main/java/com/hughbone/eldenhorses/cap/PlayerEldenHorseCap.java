@@ -40,11 +40,6 @@ public interface PlayerEldenHorseCap {
     enum AnimationPhase { IDLE, SUMMONING, UNSUMMONING }
 
     int SUMMON_TICKS = 40;
-    // Everything fires at tick 0: whistle sound, whistle animation (arms
-    // layer), mount animation (body layer), horse spawn (invisible),
-    // startRiding, fade-in. The mount animation also drives a render-time
-    // vertical offset on the player so they visually start on the ground
-    // beside the horse and rise into the saddle as the horse fades in.
     int SUMMON_MOUNT_END_TICK = 12;
     int SUMMON_FADE_DURATION = 32;
 
@@ -58,32 +53,13 @@ public interface PlayerEldenHorseCap {
     void bindHorse(ServerPlayer self, @Nullable Horse newHorse);
     void toggleSummon(ServerPlayer self);
     void rehydrate(ServerLevel level);
-    /** True while the horse is recovering from a Spectral Steed death. */
     boolean isOnCooldown();
-    /** Milliseconds until the cooldown expires (0 if not on cooldown). */
     long getCooldownRemainingMs();
-    /**
-     * Spectral Steed death-protection trigger: auto-unsummon the bonded horse
-     * (don't actually kill it) and start the cooldown timer from config.
-     */
     void triggerSpectralDeath(ServerPlayer self);
 
-    /** Current animation phase. IDLE means no animation in progress. */
     AnimationPhase getAnimationPhase();
-
-    /** Tick index within the current phase (0..N). 0 when IDLE. */
     int getAnimationPhaseTick();
-
-    /**
-     * Called every server tick by CommonEvents. Advances any in-progress
-     * summon or unsummon animation. No-op when phase is IDLE.
-     */
     void tickAnimation(ServerPlayer self);
-
-    /**
-     * Force the animation back to IDLE without firing remaining side effects.
-     * Used on dimension change, logout cleanup, etc.
-     */
     void cancelAnimation();
 
     static PlayerEldenHorseCap of(ServerPlayer p) {
@@ -112,12 +88,8 @@ public interface PlayerEldenHorseCap {
         @Nullable private CompoundTag pendingNbt;
         @Nullable private UUID pendingBoundUuid;
         private boolean pendingSummonedState;
-        /** Wall-clock millis when summon becomes available again. 0 = no cooldown. */
         private long cooldownEndMs;
 
-        // Animation phase. Transient (not persisted). Logging out mid-anim
-        // resets to IDLE on next login; the cooldown / bound horse state is
-        // saved normally and works fine.
         private AnimationPhase phase = AnimationPhase.IDLE;
         private int phaseTick = 0;
         @Override public AnimationPhase getAnimationPhase() { return phase; }
@@ -164,22 +136,14 @@ public interface PlayerEldenHorseCap {
 
         @Override
         public void toggleSummon(ServerPlayer self) {
-            // Re-press while an animation is mid-flight: ignore. Prevents
-            // mid-cycle teardown and weird half-states.
             if (phase != AnimationPhase.IDLE) return;
 
             if (horse == null) {
-                // Retry rehydrate in case the horse's chunk wasn't loaded
-                // at login time but has loaded since.
                 if (self.level() instanceof ServerLevel sl) {
                     rehydrate(sl);
                 }
             }
             if (horse == null) {
-                // Last resort: bind from the current vehicle (covers the
-                // edge case where vanilla re-mounted the player on load
-                // but Forge's EntityMountEvent didn't fire to trigger
-                // onMount).
                 if (self.getVehicle() instanceof Horse vehicle) {
                     com.hughbone.eldenhorses.cap.HorseEldenArmorCap hcap =
                             com.hughbone.eldenhorses.cap.HorseEldenArmorCap.of(vehicle);
@@ -195,10 +159,6 @@ public interface PlayerEldenHorseCap {
                 }
             }
 
-            // Re-read the bound horse's armor in case the player took off /
-            // removed the enchanted armor since binding. Without this, a
-            // bound horse stays summon-able forever even after losing the
-            // enchant.
             com.hughbone.eldenhorses.cap.HorseEldenArmorCap horseCap =
                     com.hughbone.eldenhorses.cap.HorseEldenArmorCap.of(horse);
             horseCap.updateFromHorse(horse);
@@ -244,18 +204,11 @@ public interface PlayerEldenHorseCap {
         public void tickAnimation(ServerPlayer self) {
             if (phase == AnimationPhase.IDLE) return;
 
-            // Bail on any pathological state: missing horse, dead horse,
-            // dimension mismatch (only relevant after the horse has been
-            // placed in-world during a SUMMONING phase, or for an active
-            // UNSUMMONING). Iframes drop with the cancel.
             if (horse == null) {
                 phase = AnimationPhase.IDLE;
                 phaseTick = 0;
                 return;
             }
-            // Horse exists in-world from tick 0 for both phases (summon
-            // spawns it co-located with the player at the start; unsummon
-            // begins with the horse already present).
             if (horse.isRemoved() || !horse.isAlive()
                     || horse.level() != self.level()) {
                 phase = AnimationPhase.IDLE;
@@ -276,16 +229,9 @@ public interface PlayerEldenHorseCap {
             ServerLevel level = (ServerLevel) self.level();
 
             if (t == 0) {
-                // Custom whistle ogg shipped at assets/elden_horses/sounds/whistle.ogg.
-                // Played from the player so it follows them if they walk
-                // during the whistle window.
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
                         ModSounds.WHISTLE.get(),
                         SoundSource.PLAYERS, 0.6F, 1.0F);
-                // Magical materialize layer: enderman teleport for the
-                // cosmic "vrrooop" + a low note-block chime. The pitch
-                // pair leans ascending (chime low, teleport mid-high) so
-                // the ear reads it as "something appearing".
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
                         SoundEvents.ENDERMAN_TELEPORT,
                         SoundSource.PLAYERS, 0.45F, 1.3F);
@@ -308,17 +254,11 @@ public interface PlayerEldenHorseCap {
                         new PlayAnimationS2CPacket(self.getId(), PlayAnimationS2CPacket.TYPE_MOUNT));
             }
 
-            // Particles emit during the mount rise (matches the window the
-            // player visibly transitions from ground onto horse).
             if (t < SUMMON_MOUNT_END_TICK) {
                 emitGatherParticles(level, self, t, SUMMON_MOUNT_END_TICK);
             }
 
             if (t == SUMMON_MOUNT_END_TICK) {
-                // Mount-rise complete. Re-enable horse so it responds to
-                // gravity / steering. The horse is still partially
-                // translucent (fade continues for another 20 ticks) but
-                // rideable.
                 horse.setNoAi(false);
                 horse.setNoGravity(false);
                 horse.setInvulnerable(false);
@@ -334,21 +274,10 @@ public interface PlayerEldenHorseCap {
             ServerLevel level = (ServerLevel) self.level();
 
             if (t == 0) {
-                // Start the fade-out NOW but keep the player mounted. The
-                // horse stays alive and steerable while it visually
-                // dissolves underneath, so if you press unsummon while
-                // galloping forward you keep galloping for the first half
-                // and the velocity gets transferred to you on dismount.
-                // Invulnerable so a passing mob can't kill the fading
-                // horse and abort the dismount mid-animation; AI stays on
-                // so steering still works.
                 horse.setInvulnerable(true);
                 NetworkHandler.INSTANCE.send(
                         PacketDistributor.TRACKING_ENTITY.with(() -> horse),
                         new HorseFadeS2CPacket(horse.getId(), false, UNSUMMON_FADE_DURATION));
-                // Dissolve audio: same two sounds as summon but with the
-                // pitches swapped, so the ear reads it as descending /
-                // dispersing instead of ascending / appearing.
                 level.playSound(null, self.getX(), self.getY(), self.getZ(),
                         SoundEvents.ENDERMAN_TELEPORT,
                         SoundSource.PLAYERS, 0.45F, 0.7F);
@@ -357,16 +286,9 @@ public interface PlayerEldenHorseCap {
                         SoundSource.PLAYERS, 0.55F, 1.5F);
             }
 
-            // Particles for the whole window. Player position works as
-            // the center pre-dismount (player on horse, co-located) and
-            // post-dismount (still close to where horse was).
             emitGatherParticles(level, self, t, UNSUMMON_TICKS);
 
             if (t == UNSUMMON_DISMOUNT_TICK) {
-                // Capture momentum from the (now-invisible) horse, dismount,
-                // transfer velocity to the player so they slide forward
-                // instead of dropping in place. Disable horse AI/physics
-                // for the remaining ticks until removal.
                 Vec3 vel = horse.getDeltaMovement();
                 self.stopRiding();
                 self.setDeltaMovement(vel.x, vel.y, vel.z);
@@ -380,9 +302,6 @@ public interface PlayerEldenHorseCap {
             }
 
             if (t >= UNSUMMON_TICKS - 1) {
-                // End of animation: existing teardown. Removes the entity
-                // from the world but keeps the cap's horse reference alive
-                // (via revive) so subsequent summons work.
                 Horse h = horse;
                 horse = null;
                 h.remove(Entity.RemovalReason.DISCARDED);
@@ -403,8 +322,6 @@ public interface PlayerEldenHorseCap {
             if (dimChanged) {
                 Entity moved = h.changeDimension(target);
                 if (!(moved instanceof Horse mh)) {
-                    // Couldn't migrate. Drop the animation, leave state
-                    // consistent.
                     horse = null;
                     phase = AnimationPhase.IDLE;
                     return;
@@ -428,13 +345,6 @@ public interface PlayerEldenHorseCap {
 
         private static void emitGatherParticles(ServerLevel level, ServerPlayer self,
                                                 int tick, int totalTicks) {
-            // Small saturated cyan stardust around the horse body region,
-            // kept below eye height so it doesn't blind the player in 1st
-            // person. END_ROD / FIREWORK removed (their textures are huge
-            // and unscalable). Soul-fire-flame retained at one per tick
-            // for the deep blue base near the ground.
-            //
-            // Dust size 0.5 is roughly half the default 1.0 particle scale.
             DustColorTransitionOptions stardust = new DustColorTransitionOptions(
                     new Vector3f(0.25f, 0.55f, 1.0f),
                     new Vector3f(0.55f, 0.80f, 1.0f),
@@ -445,9 +355,6 @@ public interface PlayerEldenHorseCap {
             double cz = self.getZ();
             var rand = level.random;
 
-            // Cyan dust scattered around the horse's body height. py is
-            // capped at cy + 1.4 so particles stay below the player's
-            // 1st-person camera (eye height ~cy + 1.62).
             for (int i = 0; i < 6; i++) {
                 double angle = rand.nextDouble() * Math.PI * 2;
                 double radius = 0.5 + rand.nextDouble() * 1.0;
@@ -457,8 +364,6 @@ public interface PlayerEldenHorseCap {
                 level.sendParticles(stardust, px, py, pz, 1, 0.0, 0.0, 0.0, 0.0);
             }
 
-            // One soul-fire ember per tick low to the ground (deep blue
-            // base color, sparse enough not to clutter).
             double angle = rand.nextDouble() * Math.PI * 2;
             double radius = 0.5 + rand.nextDouble() * 0.6;
             double px = cx + Math.cos(angle) * radius;
@@ -477,8 +382,6 @@ public interface PlayerEldenHorseCap {
             if (v.x * v.x + v.z * v.z < 1.0E-4) {
                 return self.getYRot();
             }
-            // MC look vector for yaw y is (-sin(y), _, cos(y)); inverting that
-            // for a velocity (vx, vz) gives yaw = atan2(-vx, vz).
             return (float) (Math.atan2(-v.x, v.z) * (180.0 / Math.PI));
         }
 
@@ -486,11 +389,6 @@ public interface PlayerEldenHorseCap {
         public void rehydrate(ServerLevel level) {
             if (horse != null) return;
 
-            // Prefer live-entity lookup by UUID. Covers the common case
-            // where the player logged out with the horse summoned and
-            // wandering: vanilla persisted the horse entity, we just need
-            // to reconnect our reference. Cheaper than recreating from NBT
-            // and keeps the original entity (its position, AI state, etc).
             if (pendingBoundUuid != null) {
                 if (level.getEntity(pendingBoundUuid) instanceof Horse live) {
                     horse = live;
@@ -498,13 +396,8 @@ public interface PlayerEldenHorseCap {
                     pendingBoundUuid = null;
                     return;
                 }
-                // Entity not loaded right now (chunk unloaded). Keep the
-                // UUID so toNbt re-saves it; rehydrate may succeed later.
             }
 
-            // Fallback: recreate the horse from saved NBT. Only used when
-            // the player logged out with horse unsummoned (no live entity
-            // in the world).
             if (pendingNbt == null) return;
             CompoundTag t = pendingNbt;
             pendingNbt = null;
@@ -522,8 +415,6 @@ public interface PlayerEldenHorseCap {
             if (cooldownEndMs > 0L) {
                 root.putLong("CooldownEndMs", cooldownEndMs);
             }
-            // Always persist the bound horse's UUID so we can reconnect on
-            // load even when the horse stays as a live entity in the world.
             if (horse != null) {
                 root.putUUID("BoundHorseUUID", horse.getUUID());
                 if (!summoned) {
@@ -533,15 +424,12 @@ public interface PlayerEldenHorseCap {
                     }
                 }
             } else if (pendingBoundUuid != null) {
-                // Player logged in but rehydrate hasn't found the entity
-                // yet (chunk likely unloaded). Round-trip the UUID.
                 root.putUUID("BoundHorseUUID", pendingBoundUuid);
                 if (pendingNbt != null && !pendingSummonedState) {
                     root.put("Elden_Horse", pendingNbt);
                     root.putBoolean("Summoned", false);
                 }
             } else if (pendingNbt != null && !pendingSummonedState) {
-                // Pre-UUID save format. Preserve as-is for back-compat.
                 root.put("Elden_Horse", pendingNbt);
                 root.putBoolean("Summoned", false);
             }
@@ -567,9 +455,7 @@ public interface PlayerEldenHorseCap {
         @Override
         public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
             if (cap != CAP) return LazyOptional.empty();
-            // Re-create the LazyOptional if it was invalidated. Forge's
-            // reviveCaps only flips a validity flag and does not restore
-            // the underlying LazyOptionals; we have to do that ourselves.
+            // Forge's reviveCaps doesn't restore LazyOptionals
             if (!opt.isPresent()) {
                 opt = LazyOptional.of(() -> impl);
             }

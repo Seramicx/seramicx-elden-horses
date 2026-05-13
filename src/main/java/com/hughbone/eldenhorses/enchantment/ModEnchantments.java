@@ -24,13 +24,6 @@ public final class ModEnchantments {
 
     private ModEnchantments() {}
 
-    /**
-     * Plain horse-armor enchantment with no equipment slot tied to it (horse
-     * armor isn't a player armor slot). Default {@code checkCompatibility}
-     * returns true for any non-self enchantment, so Spectral Steed and
-     * Spectral Leap stack with each other and with any third-party
-     * horse-armor enchant (Shiny Horses Protection etc.).
-     */
     private static final class SpectralEnchantment extends Enchantment {
         SpectralEnchantment(Rarity rarity) {
             super(rarity, SpectralEnchantmentCategory.HORSE_ARMOR, new EquipmentSlot[0]);

@@ -27,11 +27,7 @@ public abstract class LivingEntityRendererMixin {
 
     private boolean elden_lowerOpacity = false;
     private LivingEntity elden_currentEntity = null;
-    // Negative = not in summon/unsummon fade. >= 0 = override alpha (used
-    // by the fade animation; takes precedence over the config body alpha).
     private float elden_fadeAlpha = -1f;
-    // Set to true when we pushed a pose for the player mount-rise offset;
-    // we pop in the RETURN injection.
     private boolean elden_pushedMountPose = false;
 
     @Inject(
@@ -39,11 +35,6 @@ public abstract class LivingEntityRendererMixin {
             at = @At("HEAD"))
     private void elden_renderHead(LivingEntity entity, float yaw, float pt, PoseStack pose,
                                   MultiBufferSource src, int packed, CallbackInfo ci) {
-        // Player mount-rise path: during the mount-anim window we render
-        // the player at a vertical offset from their server position. The
-        // offset traces a jump arc: starts +1.5 (on ground), passes 0
-        // (saddle), overshoots to -0.2 (briefly above saddle), settles to
-        // 0. Both signs need the pose push so we render the overshoot.
         if (entity instanceof AbstractClientPlayer) {
             float offset = ClientAnimationHooks.getMountAnimOffset(entity.getId(), pt);
             if (offset != 0f) {
@@ -57,9 +48,6 @@ public abstract class LivingEntityRendererMixin {
         if (!(entity instanceof Horse horse)) return;
         Minecraft mc = Minecraft.getInstance();
 
-        // Summon/unsummon fade path: applies in any view, regardless of
-        // rider or spectral steed state. The fade tracker is populated by
-        // the HorseFadeS2CPacket the server fires at the fade-start tick.
         if (ClientAnimationHooks.isFading(horse.getId())) {
             elden_fadeAlpha = ClientAnimationHooks.getFadeAlpha(horse.getId());
             elden_lowerOpacity = true;
@@ -67,10 +55,7 @@ public abstract class LivingEntityRendererMixin {
             return;
         }
 
-        // 1st-person transparency path (existing behavior).
-        // Skip GUI contexts (horse inventory preview, JEI, etc.). With
-        // no-depth-write enabled and full-screen viewport, the translucent
-        // horse would tint the whole screen with its texture color.
+        // Skip GUI contexts (inventory preview would tint the screen)
         if (mc.screen != null) return;
         if (!horse.hasPassenger(mc.player)) return;
         if (!mc.options.getCameraType().isFirstPerson()) return;
@@ -104,11 +89,7 @@ public abstract class LivingEntityRendererMixin {
         return original;
     }
 
-    // Swap the body's translucent buffer to a no-depth-write variant. The
-    // vanilla translucent type writes depth, which causes block-break crack
-    // overlays under the horse to fail the depth test (cracks invisible).
-    // Skipping depth write fixes that without dropping the horse from the
-    // frame.
+    // No-depth-write so block-break cracks under the horse stay visible
     @Redirect(
             method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "INVOKE",
@@ -120,10 +101,6 @@ public abstract class LivingEntityRendererMixin {
         return src.getBuffer(EldenRenderTypes.translucentNoDepth(tex));
     }
 
-    // Two-mode alpha override. Fade animation wins when active (its alpha
-    // changes per tick to drive the materialization effect). Otherwise we
-    // use the config body alpha so users can tune the 1st-person ghost
-    // density.
     @ModifyArg(
             method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "INVOKE",

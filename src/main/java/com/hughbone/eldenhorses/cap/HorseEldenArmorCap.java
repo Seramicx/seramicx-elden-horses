@@ -23,7 +23,6 @@ public interface HorseEldenArmorCap {
 
     boolean hasSpectralSteed();
     boolean hasSpectralLeap();
-    /** Convenience for "has either spectral enchant" (used to decide when to bind on mount). */
     default boolean hasAny() { return hasSpectralSteed() || hasSpectralLeap(); }
     void updateFromHorse(AbstractHorse horse);
 
@@ -68,10 +67,7 @@ public interface HorseEldenArmorCap {
         @Override
         public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
             if (cap != CAP) return LazyOptional.empty();
-            // Re-create the LazyOptional if it was invalidated (e.g. after
-            // h.remove() during unsummon). Forge's reviveCaps only flips a
-            // validity flag and does not restore the underlying LazyOptionals;
-            // we have to do that ourselves so the cap survives un/re-summon.
+            // Forge's reviveCaps doesn't restore LazyOptionals
             if (!opt.isPresent()) {
                 opt = LazyOptional.of(() -> impl);
             }

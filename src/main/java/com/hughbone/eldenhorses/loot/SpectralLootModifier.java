@@ -26,11 +26,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-/**
- * Forge global loot modifier: on chest opens, roll a small chance to add a
- * Spectral enchantment book or a pre-enchanted horse armor. Tied to the
- * forge:chests tag pattern via the JSON's loot_table_id_regex condition.
- */
 public class SpectralLootModifier extends LootModifier {
 
     public static final Supplier<Codec<SpectralLootModifier>> CODEC = Suppliers.memoize(() ->
@@ -50,11 +45,6 @@ public class SpectralLootModifier extends LootModifier {
     @Override
     @NotNull
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generated, LootContext ctx) {
-        // Targets any loot table whose path contains "chests/", covering vanilla and
-        // modded chest loot. Tags on loot tables aren't a thing in 1.20.1, so
-        // we filter by the conventional path naming. Forge's built-in
-        // loot_table_id condition only supports exact matches; doing the
-        // regex inline is the simplest cross-mod approach.
         ResourceLocation table = ctx.getQueriedLootTableId();
         if (table == null || !table.getPath().contains("chests/")) return generated;
 
@@ -84,10 +74,6 @@ public class SpectralLootModifier extends LootModifier {
     }
 
     private static Item pickArmor(RandomSource rand) {
-        // Netherite horse armor is intentionally excluded from loot drops.
-        // It stays craft-only (smithing template + diamond horse armor +
-        // netherite ingot) so finding it in a chest can't trivialize the
-        // smithing progression.
         double r = rand.nextDouble();
         if (r < 0.50) return Items.IRON_HORSE_ARMOR;
         if (r < 0.85) return Items.GOLDEN_HORSE_ARMOR;

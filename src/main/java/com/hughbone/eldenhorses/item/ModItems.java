@@ -16,10 +16,6 @@ public class ModItems {
             () -> new EldenHorseArmor(new Item.Properties().stacksTo(1).fireResistant())
     );
 
-    // Apotheosis-only. The factory class is in compat.apotheosis and is only
-    // referenced via the supplier below, so the JVM won't load it (and won't
-    // try to resolve TomeItem) unless ModList sees apotheosis loaded and the
-    // supplier actually fires.
     public static final RegistryObject<Item> HORSE_ARMOR_TOME =
             ModList.get().isLoaded("apotheosis")
                     ? ITEMS.register("horse_armor_tome",

@@ -23,24 +23,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * Make horse armor translucent in 1st person while the rider is mounted with
- * SPECTRAL_STEED enchant. Required because Shiny Horses' own
- * {@code HorseArmorLayerMixin} uses {@code @ModifyVariable} on the same
- * getBuffer() INVOKE_ASSIGN site and replaces the VertexConsumer with one
- * built from {@code RenderType.entityCutoutNoCull} (alpha-test, binary
- * cutoff), which overrides any render-type redirect.
- *
- * <p>To win the chain, our {@code @ModifyVariable} runs at a LOWER priority
- * than Shiny Horses (default 1000). Modifier chain order is highest-priority-
- * first, so Shiny Horses runs first; we receive their result and replace it
- * with a translucent VertexConsumer (preserving glint if Shiny Horses had
- * applied it).
- */
-// HIGHER priority than Shiny Horses (default 1000) so our @ModifyVariable
-// is applied LATER in mixin's transform pipeline, which puts our modifier
-// LAST in the runtime chain, receiving Shiny Horses' wrapped consumer
-// and overriding it with our translucent one.
+// Priority 1500: applied after Shiny Horses (1000) so our @ModifyVariable runs last.
 @Mixin(value = HorseArmorLayer.class, priority = 1500)
 public abstract class HorseArmorLayerTransparencyMixin {
 
@@ -57,8 +40,6 @@ public abstract class HorseArmorLayerTransparencyMixin {
         elden_shouldLower = false;
         elden_fadeAlpha = -1f;
 
-        // Summon/unsummon fade path: applies in any view, regardless of
-        // rider state. Driven by HorseFadeS2CPacket on the client side.
         if (ClientAnimationHooks.isFading(horse.getId())) {
             elden_shouldLower = true;
             elden_fadeAlpha = ClientAnimationHooks.getFadeAlpha(horse.getId());

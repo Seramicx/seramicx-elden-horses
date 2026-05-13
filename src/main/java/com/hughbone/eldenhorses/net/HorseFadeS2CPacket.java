@@ -8,10 +8,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-// Server-to-client: a horse is entering a fade-in or fade-out state for
-// the given duration in ticks. The receiving client stores the timing
-// keyed by entity id; the render mixin reads from that map and applies
-// alpha each frame.
 public class HorseFadeS2CPacket {
     private final int horseEntityId;
     private final boolean fadeIn;

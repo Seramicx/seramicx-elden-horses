@@ -52,8 +52,6 @@ public abstract class AbstractHorseMixin {
 
     private static void emitSpectralLeapEffect(AbstractHorse horse) {
         Level level = horse.level();
-        // Spectral Leap's gating only fires on the client (playerJumpPendingScale > 0 is client-only
-        // for the tap-jump path used here). Spawn particles + sound client-side directly.
         if (!level.isClientSide()) return;
 
         double cx = horse.getX();
