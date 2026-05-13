@@ -27,3 +27,6 @@ forge*changelog.txt
 # Third-party mod jars used as compileOnly deps (Apotheosis, Placebo).
 # Not redistributable; clone-time setup instructions live in libs/README.md.
 libs/*.jar
+
+# Local brainstorming / plan artifacts from superpowers tooling.
+docs/superpowers/
