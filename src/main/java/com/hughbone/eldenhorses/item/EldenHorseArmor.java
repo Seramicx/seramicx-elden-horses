@@ -8,7 +8,7 @@ public class EldenHorseArmor extends HorseArmorItem {
             new ResourceLocation("elden_horses", "textures/entity/horse_armor_netherite.png");
 
     public EldenHorseArmor(Properties props) {
-        super(15, "netherite", props);
+        super(14, "netherite", props);
     }
 
     @Override
