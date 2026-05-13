@@ -3,8 +3,8 @@
 A Forge 1.20.1 port of [HughBone's Elden Horses](https://github.com/HughBone/elden-horses) (originally Fabric, MC 1.19.2), heavily expanded with Spectral enchantments, an Elden Ring style summon animation, and Apotheosis / Shiny Horses compat.
 
 <p align="center">
-  <a href="https://youtu.be/U2Gf7-xuLw0">
-    <img src="https://i.ytimg.com/vi/U2Gf7-xuLw0/hqdefault.jpg" alt="Animation showcase" width="600">
+  <a href="https://youtu.be/wjSSLo0107k">
+    <img src="https://i.ytimg.com/vi/wjSSLo0107k/hqdefault.jpg" alt="Animation showcase" width="600">
   </a>
   <br>
   <em>Animation showcase (click to watch)</em>
