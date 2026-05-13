@@ -29,21 +29,13 @@ Two new enchantments for any vanilla or modded horse armor:
   <img src="docs/media/1st-person-translucency.png" alt="1st-person translucent horse while mining" width="400">
 </p>
 
-**Spectral Leap**: mid-air double jump. The horse releases a cosmic burst of cyan stardust, soul-fire embers, and a layered chime / bell tone on activation.
+**Spectral Leap**: mid-air double jump, with a cosmic burst of particles and chime on activation.
 
 Obtain via enchanting table, anvil + book, or chest loot.
 
 ## Summon and unsummon animation
 
-A 2-second summon, 1.2-second unsummon, with i-frames during the active transition (about 0.6s for both player and horse):
-
-- Custom whistle sound, layered enderman teleport and note-block chime for the materialize and dissolve audio (pitch ascends on summon, descends on unsummon)
-- Whistle pose: arm to mouth, head tilted, driven by PlayerAnimator
-- Mount pose: leg swing then settle into the saddle
-- Render-time vertical offset: you visibly rise from the ground into the saddle, not snap-teleport
-- Cyan stardust particles, kept below 1st-person camera height
-- Horse fades in around you on mount, dissolves underneath on dismount
-- Unsummon preserves horse momentum: dismount while galloping and you keep sliding forward
+Elden Ring style. Whistle, hop onto the materializing horse, ride off. Reverse on unsummon. i-frames during the transition; momentum carries over if you dismount mid-gallop.
 
 ## Tome of Horse Armor (Apotheosis)
 
