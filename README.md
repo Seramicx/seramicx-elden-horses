@@ -63,7 +63,7 @@ A Forge global loot modifier rolls extra drops into any chest table (vanilla or 
 - Spectral Steed / Leap enchanted books
 - Pre-enchanted horse armor (iron / gold / diamond)
 
-Drop rate and book-to-armor ratio are config-driven. Netherite horse armor is intentionally excluded from loot and must be smithed (template + diamond horse armor + netherite ingot, same as vanilla netherite armor upgrades).
+Drop rate and book-to-armor ratio are config-driven. Netherite horse armor isn't in the loot pool; smith it with a netherite upgrade template + diamond horse armor + netherite ingot, same flow as vanilla netherite armor.
 
 ## Configuration
 
