@@ -4,7 +4,6 @@ import com.google.common.base.Suppliers;
 import com.hughbone.eldenhorses.EldenHorses;
 import com.hughbone.eldenhorses.EldenHorsesConfig;
 import com.hughbone.eldenhorses.enchantment.ModEnchantments;
-import com.hughbone.eldenhorses.item.ModItems;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -85,11 +84,14 @@ public class SpectralLootModifier extends LootModifier {
     }
 
     private static Item pickArmor(RandomSource rand) {
+        // Netherite horse armor is intentionally excluded from loot drops.
+        // It stays craft-only (smithing template + diamond horse armor +
+        // netherite ingot) so finding it in a chest can't trivialize the
+        // smithing progression.
         double r = rand.nextDouble();
         if (r < 0.50) return Items.IRON_HORSE_ARMOR;
         if (r < 0.85) return Items.GOLDEN_HORSE_ARMOR;
-        if (r < 0.97) return Items.DIAMOND_HORSE_ARMOR;
-        return ModItems.NETHERITE_HORSE_ARMOR.get();
+        return Items.DIAMOND_HORSE_ARMOR;
     }
 
     @Override
